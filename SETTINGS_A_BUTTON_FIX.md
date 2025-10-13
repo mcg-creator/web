@@ -2,7 +2,7 @@
 
 ## ✅ **Problem Fixed: A Button in Settings Carousel**
 
-The issue was that the A button handling for the settings carousel was only listening to keyboard events, not the unified input system that includes both keyboard and ROG Ally controller.
+The issue was that the A button handling for the settings carousel was only listening to keyboard events, not the unified input system that includes both keyboard and ROG Ally controller.  
 
 ## **🔧 What Was Fixed**
 
