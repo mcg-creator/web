@@ -40,6 +40,15 @@ function init() {
     // Start update loop
     update();
     
+    // Make the app visible by adding the ready class
+    setTimeout(() => {
+        const app = document.getElementById('app');
+        if (app) {
+            app.classList.add('ready');
+            console.log('✅ Application is now visible');
+        }
+    }, 100);
+    
     // Display controls info
     console.log('🎮 ASUS ROG Ally Controller + Keyboard Support Enabled!');
     console.log('📋 Controls:');

@@ -107,7 +107,7 @@
     function preloadGameAudio(gameId) {
       if (!gameAudioCache.has(gameId)) {
         const audio = new Audio();
-        audio.src = `assets/sounds/games/${gameId}.mp3`;
+        audio.src = `assets/sounds/games/${gameId}.MP3`;
         audio.loop = true;
         audio.volume = 0;
         audio.preload = 'auto';
@@ -3116,6 +3116,7 @@
   <script src="keyboard.js"></script>
   <script src="gamepad.js"></script>
   <script src="input.js"></script>
+  <script src="lockscreen.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
