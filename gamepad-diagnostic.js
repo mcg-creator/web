@@ -17,39 +17,6 @@ class GamepadDiagnostic {
         console.log('📋 Use startDiagnostic() to begin testing');
     }
     
-    createDiagnosticButton() {
-        // Create a floating diagnostic button for touch access
-        const button = document.createElement('div');
-        button.id = 'diagnostic-button';
-        button.style.cssText = `
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 9999;
-            user-select: none;
-            border: 2px solid #ff0000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        `;
-        button.innerHTML = '🔍';
-        button.title = 'Open Gamepad Diagnostic';
-        
-        button.onclick = () => {
-            this.toggleDiagnostic();
-        };
-        
-        document.body.appendChild(button);
-    }
-    
     createDiagnosticUI() {
         // Create diagnostic overlay
         const overlay = document.createElement('div');
@@ -107,9 +74,6 @@ class GamepadDiagnostic {
         // Add gamepad combo to show/hide diagnostic (LB + RB + Start)
         this.gamepadComboTimer = null;
         this.gamepadComboActive = false;
-        
-        // Also add touch/click area for easy access
-        this.createDiagnosticButton();
     }
     
     logGamepadInfo(gamepad) {
@@ -197,8 +161,7 @@ class GamepadDiagnostic {
         diagnosticData += '• ASUS ROG Ally should appear as "Xbox Controller"<br>';
         diagnosticData += '• Try pressing any button to wake up controller<br>';
         diagnosticData += '• Check Windows > Settings > Gaming > Xbox Game Bar<br>';
-        diagnosticData += '• Click red 🔍 button in top-left to toggle this panel<br>';
-        diagnosticData += '• Or hold LB + RB + Menu for 2 seconds<br>';
+        diagnosticData += '• Or hold LB + RB + Menu for 2 seconds to toggle panel<br>';
         diagnosticData += '</div>';
         
         this.updateData(diagnosticData);
@@ -314,21 +277,9 @@ let gamepadDiagnostic;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         gamepadDiagnostic = new GamepadDiagnostic();
-        // Auto-show diagnostic panel for immediate troubleshooting
-        setTimeout(() => {
-            gamepadDiagnostic.showDiagnostic();
-            gamepadDiagnostic.startDiagnostic();
-            console.log('🎮 Auto-started diagnostic for ROG Ally troubleshooting');
-        }, 2000);
     });
 } else {
     gamepadDiagnostic = new GamepadDiagnostic();
-    // Auto-show diagnostic panel for immediate troubleshooting
-    setTimeout(() => {
-        gamepadDiagnostic.showDiagnostic();
-        gamepadDiagnostic.startDiagnostic();
-        console.log('🎮 Auto-started diagnostic for ROG Ally troubleshooting');
-    }, 2000);
 }
 
 // Global functions for easy console access
@@ -347,7 +298,6 @@ window.stopGamepadDiagnostic = () => {
 
 console.log('🔍 ASUS ROG Ally Diagnostic Tool Loaded');
 console.log('📋 Available access methods:');
-console.log('  • Touch the red 🔍 button in top-left corner');
 console.log('  • Hold LB + RB + Menu buttons for 2 seconds on gamepad');
 console.log('  • startGamepadDiagnostic() - Show diagnostic panel');
 console.log('  • stopGamepadDiagnostic() - Stop diagnostic');
