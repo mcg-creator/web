@@ -36,6 +36,10 @@ class GamepadManager {
         this.triggerThreshold = 0.1;    // Threshold for trigger activation
         this.stickThreshold = 0.5;      // Threshold for stick direction detection
 
+        // Input debouncing to prevent rapid-fire inputs
+        this.inputCooldown = 200;       // Milliseconds between inputs (200ms = 5 inputs/second max)
+        this.lastInputTime = new Map(); // Track last input time for each direction/button
+
         // Current and previous gamepad states
         this.currentState = new Map();
         this.previousState = new Map();
@@ -124,6 +128,18 @@ class GamepadManager {
         document.dispatchEvent(event);
     }
 
+    // Check if enough time has passed since last input for this key
+    canProcessInput(inputKey) {
+        const now = Date.now();
+        const lastTime = this.lastInputTime.get(inputKey) || 0;
+        
+        if (now - lastTime >= this.inputCooldown) {
+            this.lastInputTime.set(inputKey, now);
+            return true;
+        }
+        return false;
+    }
+
     // Handle d-pad to arrow key mapping
     handleDirectionToArrowKeys(gamepadIndex = 0) {
         const gamepad = this.currentState.get(gamepadIndex);
@@ -132,16 +148,14 @@ class GamepadManager {
         // Check each d-pad direction
         for (const [dpadButton, arrowKey] of Object.entries(this.directionToKeyMap)) {
             const justPressedNow = this.justPressed(dpadButton, gamepadIndex);
-            const justReleasedNow = this.justReleased(dpadButton, gamepadIndex);
 
-            if (justPressedNow) {
+            if (justPressedNow && this.canProcessInput(`dpad_${dpadButton}`)) {
                 console.log(`🎮 D-pad ${dpadButton} pressed, simulating ${arrowKey} keydown`);
                 this.simulateKeyboardEvent(arrowKey, 'keydown');
-            }
-
-            if (justReleasedNow) {
-                console.log(`🎮 D-pad ${dpadButton} released, simulating ${arrowKey} keyup`);
-                this.simulateKeyboardEvent(arrowKey, 'keyup');
+                // Simulate immediate keyup to prevent holding
+                setTimeout(() => {
+                    this.simulateKeyboardEvent(arrowKey, 'keyup');
+                }, 50);
             }
         }
     }
@@ -165,14 +179,15 @@ class GamepadManager {
             const arrowKey = this.directionToKeyMap[direction];
             const keyStateKey = `stick_${direction}`;
             
-            if (isActive && !this.simulatedKeys.has(keyStateKey)) {
+            if (isActive && !this.simulatedKeys.has(keyStateKey) && this.canProcessInput(keyStateKey)) {
                 console.log(`🎮 Left stick ${direction}, simulating ${arrowKey} keydown`);
                 this.simulatedKeys.add(keyStateKey);
                 this.simulateKeyboardEvent(arrowKey, 'keydown');
-            } else if (!isActive && this.simulatedKeys.has(keyStateKey)) {
-                console.log(`🎮 Left stick ${direction} released, simulating ${arrowKey} keyup`);
-                this.simulatedKeys.delete(keyStateKey);
-                this.simulateKeyboardEvent(arrowKey, 'keyup');
+                // Auto-release after short delay to prevent holding
+                setTimeout(() => {
+                    this.simulatedKeys.delete(keyStateKey);
+                    this.simulateKeyboardEvent(arrowKey, 'keyup');
+                }, 50);
             }
         }
     }
@@ -185,24 +200,40 @@ class GamepadManager {
         // Check each mapped button
         for (const [buttonName, keyCodes] of Object.entries(this.buttonToKeyMap)) {
             const justPressedNow = this.justPressed(buttonName, gamepadIndex);
-            const justReleasedNow = this.justReleased(buttonName, gamepadIndex);
 
-            if (justPressedNow) {
+            if (justPressedNow && this.canProcessInput(`button_${buttonName}`)) {
                 console.log(`🎮 Button ${buttonName} pressed, simulating keys: ${keyCodes.join(', ')}`);
                 // Simulate all mapped keys
                 keyCodes.forEach(keyCode => {
                     this.simulateKeyboardEvent(keyCode, 'keydown');
                 });
-            }
-
-            if (justReleasedNow) {
-                console.log(`🎮 Button ${buttonName} released, simulating keys release: ${keyCodes.join(', ')}`);
-                // Simulate all mapped keys release
-                keyCodes.forEach(keyCode => {
-                    this.simulateKeyboardEvent(keyCode, 'keyup');
-                });
+                // Auto-release after short delay
+                setTimeout(() => {
+                    keyCodes.forEach(keyCode => {
+                        this.simulateKeyboardEvent(keyCode, 'keyup');
+                    });
+                }, 50);
             }
         }
+    }
+
+    // Adjust input sensitivity for ROG Ally
+    setSensitivity(mode = 'normal') {
+        switch(mode) {
+            case 'low':
+                this.inputCooldown = 300; // Slower response
+                this.stickThreshold = 0.7; // Require more stick movement
+                break;
+            case 'normal':
+                this.inputCooldown = 200; // Default
+                this.stickThreshold = 0.5; // Default
+                break;
+            case 'high':
+                this.inputCooldown = 100; // Faster response
+                this.stickThreshold = 0.3; // Less stick movement needed
+                break;
+        }
+        console.log(`🎮 Sensitivity set to ${mode}: cooldown=${this.inputCooldown}ms, threshold=${this.stickThreshold}`);
     }
 
     // Get the first connected gamepad
