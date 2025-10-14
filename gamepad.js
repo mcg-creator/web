@@ -236,13 +236,16 @@ class GamepadManager {
             const newIndex = (currentIndex - 1 + totalTabs) % totalTabs;
             
             console.log(`🎮 LB: Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
+            console.log(`🎮 Current navigationFocus: ${window.navigationFocus}`);
             
             // Check if we're in carousel mode and should maintain focus
             if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
                 // Switch tab but maintain carousel focus
+                console.log(`🎮 LB: Maintaining carousel focus during tab switch`);
                 this.switchTabMaintainCarouselFocus(newIndex);
             } else {
                 // Normal tab switch (will reset to nav focus)
+                console.log(`🎮 LB: Normal tab switch (not in carousel mode)`);
                 window.selectTab(newIndex);
             }
         }
@@ -257,13 +260,16 @@ class GamepadManager {
             const newIndex = (currentIndex + 1) % totalTabs;
             
             console.log(`🎮 RB: Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
+            console.log(`🎮 Current navigationFocus: ${window.navigationFocus}`);
             
             // Check if we're in carousel mode and should maintain focus
             if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
                 // Switch tab but maintain carousel focus
+                console.log(`🎮 RB: Maintaining carousel focus during tab switch`);
                 this.switchTabMaintainCarouselFocus(newIndex);
             } else {
                 // Normal tab switch (will reset to nav focus)
+                console.log(`🎮 RB: Normal tab switch (not in carousel mode)`);
                 window.selectTab(newIndex);
             }
         }
@@ -274,20 +280,23 @@ class GamepadManager {
         if (typeof window.selectTab === 'function') {
             // Store the current focus state
             const wasFocusedOnCarousel = window.navigationFocus === 'carousel';
+            console.log(`🎮 switchTabMaintainCarouselFocus: wasFocusedOnCarousel = ${wasFocusedOnCarousel}`);
             
             // Switch to the new tab
             window.selectTab(newIndex);
             
             // If we were focused on carousel, restore that focus
             if (wasFocusedOnCarousel) {
-                // Small delay to ensure tab switch is complete
+                // Longer delay to ensure tab switch is complete and HTML has finished processing
                 setTimeout(() => {
+                    console.log(`🎮 Restoring carousel focus after tab switch`);
                     window.navigationFocus = 'carousel';
                     if (typeof window.updateFocusVisuals === 'function') {
                         window.updateFocusVisuals();
                     }
                     console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
-                }, 50);
+                    console.log(`🎮 Final navigationFocus state: ${window.navigationFocus}`);
+                }, 100); // Increased from 50ms to 100ms
             }
         }
     }
