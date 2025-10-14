@@ -283,24 +283,41 @@ class GamepadManager {
         // Store the current focus state (we know we're in carousel mode)
         const wasFocusedOnCarousel = true;
         
-        // Switch to the new tab - exactly like keyboard Q/E
-        window.selectedIndex = newIndex;
+        // Switch to the new tab - EXACTLY like keyboard Q/E keys
+        // Update internal selectedIndex variable directly like keyboard does
+        if (typeof window.updateInternalSelectedIndex === 'function') {
+            window.updateInternalSelectedIndex(newIndex);
+        } else {
+            // Fallback to just updating window global
+            window.selectedIndex = newIndex;
+        }
         
-        // Call renderNav directly instead of selectTab
+        // Call renderNav directly instead of selectTab - exactly like keyboard Q/E
         if (typeof window.renderNav === 'function') {
             window.renderNav();
+        } else {
+            console.warn('🎮 window.renderNav not available');
         }
         
         // Restore carousel focus after tab switch - EXACTLY like keyboard Q/E
         setTimeout(() => {
-            window.navigationFocus = 'carousel';
+            // Update internal navigationFocus variable directly like keyboard does
+            if (typeof window.updateInternalNavigationFocus === 'function') {
+                window.updateInternalNavigationFocus('carousel');
+            } else {
+                // Fallback to just updating window global
+                window.navigationFocus = 'carousel';
+            }
+            
             if (typeof window.updateFocusVisuals === 'function') {
                 window.updateFocusVisuals();
+            } else {
+                console.warn('🎮 window.updateFocusVisuals not available');
             }
             console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
         }, 50);
         
-        // Play navigation sound
+        // Play navigation sound - exactly like keyboard Q/E
         if (window.playNavSound) {
             window.playNavSound();
         }

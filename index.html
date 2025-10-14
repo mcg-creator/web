@@ -2099,6 +2099,17 @@
     
     // Make renderNav function globally accessible for gamepad
     window.renderNav = renderNav;
+    
+    // Helper functions for gamepad to update internal variables
+    window.updateInternalSelectedIndex = function(newIndex) {
+        selectedIndex = newIndex;
+        window.selectedIndex = selectedIndex;
+    };
+    
+    window.updateInternalNavigationFocus = function(newFocus) {
+        navigationFocus = newFocus;
+        window.navigationFocus = navigationFocus;
+    };
 
     // Enhanced keyboard support with two-level navigation
     document.addEventListener("keydown", (e) => {
