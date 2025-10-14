@@ -2221,6 +2221,80 @@
         e.preventDefault();
       } else if (e.key === "d") {
         e.preventDefault(); // Prevent zoom control
+      } else if (e.key === "q" || e.key === "Q") {
+        // Previous tab (LB equivalent)
+        const currentIndex = selectedIndex;
+        const totalTabs = tabs.length;
+        const newIndex = (currentIndex - 1 + totalTabs) % totalTabs;
+        
+        console.log(`⌨️ Q key (LB): Switching from tab ${currentIndex} to ${newIndex} (${tabs[newIndex]})`);
+        
+        // Check if we're in carousel mode and should maintain focus
+        if (navigationFocus === 'carousel') {
+          // Store the current focus state
+          const wasFocusedOnCarousel = true;
+          
+          // Switch to the new tab
+          selectedIndex = newIndex;
+          window.selectedIndex = selectedIndex;
+          renderNav();
+          
+          // Restore carousel focus after tab switch
+          setTimeout(() => {
+            navigationFocus = 'carousel';
+            window.navigationFocus = navigationFocus;
+            updateFocusVisuals();
+            console.log(`⌨️ Maintained carousel focus in new tab: ${tabs[newIndex]}`);
+          }, 50);
+        } else {
+          // Normal tab switch (will reset to nav focus)
+          selectedIndex = newIndex;
+          window.selectedIndex = selectedIndex;
+          renderNav();
+        }
+        
+        // Play navigation sound
+        if (window.playNavSound) {
+          window.playNavSound();
+        }
+        e.preventDefault();
+      } else if (e.key === "e" || e.key === "E") {
+        // Next tab (RB equivalent)
+        const currentIndex = selectedIndex;
+        const totalTabs = tabs.length;
+        const newIndex = (currentIndex + 1) % totalTabs;
+        
+        console.log(`⌨️ E key (RB): Switching from tab ${currentIndex} to ${newIndex} (${tabs[newIndex]})`);
+        
+        // Check if we're in carousel mode and should maintain focus
+        if (navigationFocus === 'carousel') {
+          // Store the current focus state
+          const wasFocusedOnCarousel = true;
+          
+          // Switch to the new tab
+          selectedIndex = newIndex;
+          window.selectedIndex = selectedIndex;
+          renderNav();
+          
+          // Restore carousel focus after tab switch
+          setTimeout(() => {
+            navigationFocus = 'carousel';
+            window.navigationFocus = navigationFocus;
+            updateFocusVisuals();
+            console.log(`⌨️ Maintained carousel focus in new tab: ${tabs[newIndex]}`);
+          }, 50);
+        } else {
+          // Normal tab switch (will reset to nav focus)
+          selectedIndex = newIndex;
+          window.selectedIndex = selectedIndex;
+          renderNav();
+        }
+        
+        // Play navigation sound
+        if (window.playNavSound) {
+          window.playNavSound();
+        }
+        e.preventDefault();
       }
     });
 

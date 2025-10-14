@@ -75,6 +75,12 @@ class KeyboardManager {
         this.leftTrigger = 0;
         this.rightTrigger = 0;
 
+        // Special button functions for LB/RB (shoulder buttons) - same as gamepad
+        this.shoulderButtonHandlers = {
+            'LB': () => this.handlePreviousTab(),
+            'RB': () => this.handleNextTab()
+        };
+
         // Setup event listeners
         this.setupEventListeners();
     }
@@ -136,6 +142,9 @@ class KeyboardManager {
     // Update - call this each frame
     update() {
         this.prevKeysDown = new Set(this.keysDown);
+        
+        // Handle special shoulder button functions (LB/RB for tab switching)
+        this.handleShoulderButtons();
     }
 
     // Check if a button is currently pressed
@@ -237,10 +246,89 @@ class KeyboardManager {
         return {
             'Navigation': 'Arrow Keys (↑↓←→)',
             'Selection': 'A key, S key, or Spacebar',
+            'Quick Tab Switch': 'Q (Previous Tab), E (Next Tab) - maintains carousel focus',
             'Alternative Navigation': 'WASD or IJKL',
             'Menu': 'Enter (MENU), Tab (VIEW), Esc (HOME)',
             'Shoulders': 'Q (LB), E (RB)',
             'Triggers': 'Z (LT), C (RT)'
         };
+    }
+
+    // Handle shoulder buttons for tab switching (LB/RB) - same logic as gamepad
+    handleShoulderButtons() {
+        // Check each shoulder button
+        for (const [buttonName, handler] of Object.entries(this.shoulderButtonHandlers)) {
+            const justPressedNow = this.justPressed(buttonName);
+
+            if (justPressedNow) {
+                console.log(`⌨️ ${buttonName} key pressed, executing tab switch`);
+                handler();
+            }
+        }
+    }
+
+    // Handle previous tab (LB button / Q key)
+    handlePreviousTab() {
+        // Access the global navigation variables from the HTML
+        if (typeof window.selectedIndex !== 'undefined' && typeof window.tabs !== 'undefined') {
+            const currentIndex = window.selectedIndex;
+            const totalTabs = window.tabs.length;
+            const newIndex = (currentIndex - 1 + totalTabs) % totalTabs;
+            
+            console.log(`⌨️ Q key (LB): Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
+            
+            // Check if we're in carousel mode and should maintain focus
+            if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
+                // Switch tab but maintain carousel focus
+                this.switchTabMaintainCarouselFocus(newIndex);
+            } else {
+                // Normal tab switch (will reset to nav focus)
+                window.selectTab(newIndex);
+            }
+        }
+    }
+
+    // Handle next tab (RB button / E key)
+    handleNextTab() {
+        // Access the global navigation variables from the HTML
+        if (typeof window.selectedIndex !== 'undefined' && typeof window.tabs !== 'undefined') {
+            const currentIndex = window.selectedIndex;
+            const totalTabs = window.tabs.length;
+            const newIndex = (currentIndex + 1) % totalTabs;
+            
+            console.log(`⌨️ E key (RB): Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
+            
+            // Check if we're in carousel mode and should maintain focus
+            if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
+                // Switch tab but maintain carousel focus
+                this.switchTabMaintainCarouselFocus(newIndex);
+            } else {
+                // Normal tab switch (will reset to nav focus)
+                window.selectTab(newIndex);
+            }
+        }
+    }
+
+    // Switch tab while maintaining carousel focus - same logic as gamepad
+    switchTabMaintainCarouselFocus(newIndex) {
+        if (typeof window.selectTab === 'function') {
+            // Store the current focus state
+            const wasFocusedOnCarousel = window.navigationFocus === 'carousel';
+            
+            // Switch to the new tab
+            window.selectTab(newIndex);
+            
+            // If we were focused on carousel, restore that focus
+            if (wasFocusedOnCarousel) {
+                // Small delay to ensure tab switch is complete
+                setTimeout(() => {
+                    window.navigationFocus = 'carousel';
+                    if (typeof window.updateFocusVisuals === 'function') {
+                        window.updateFocusVisuals();
+                    }
+                    console.log(`⌨️ Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
+                }, 50);
+            }
+        }
     }
 }
