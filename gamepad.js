@@ -94,13 +94,33 @@ class GamepadManager {
 
     // Simulate keyboard events for gamepad inputs
     simulateKeyboardEvent(keyCode, eventType) {
+        // Create a more complete keyboard event that matches real keyboard events
         const event = new KeyboardEvent(eventType, {
             key: keyCode,
-            code: keyCode,
+            code: keyCode === 'ArrowUp' ? 'ArrowUp' : 
+                  keyCode === 'ArrowDown' ? 'ArrowDown' :
+                  keyCode === 'ArrowLeft' ? 'ArrowLeft' :
+                  keyCode === 'ArrowRight' ? 'ArrowRight' :
+                  keyCode === ' ' ? 'Space' :
+                  keyCode === 'a' ? 'KeyA' :
+                  keyCode === 'A' ? 'KeyA' : keyCode,
+            keyCode: keyCode === 'ArrowUp' ? 38 : 
+                     keyCode === 'ArrowDown' ? 40 :
+                     keyCode === 'ArrowLeft' ? 37 :
+                     keyCode === 'ArrowRight' ? 39 :
+                     keyCode === ' ' ? 32 :
+                     keyCode === 'a' || keyCode === 'A' ? 65 : 0,
+            which: keyCode === 'ArrowUp' ? 38 : 
+                   keyCode === 'ArrowDown' ? 40 :
+                   keyCode === 'ArrowLeft' ? 37 :
+                   keyCode === 'ArrowRight' ? 39 :
+                   keyCode === ' ' ? 32 :
+                   keyCode === 'a' || keyCode === 'A' ? 65 : 0,
             bubbles: true,
             cancelable: true
         });
         
+        console.log(`🎮 Simulating ${eventType}: ${keyCode}`);
         document.dispatchEvent(event);
     }
 

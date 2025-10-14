@@ -37,6 +37,23 @@ function init() {
     carouselNavAudio.volume = 0.5; // Set volume to 50%
     window.carouselAudio = carouselNavAudio; // Make available globally for lockscreen
     
+    // Set up gamepad connection detection with better logging
+    window.addEventListener('gamepadconnected', (e) => {
+        console.log('🎮 ASUS ROG Ally Gamepad Connected!', e.gamepad.id);
+        console.log('🎮 Gamepad mapping:', e.gamepad.mapping);
+        console.log('🎮 Number of buttons:', e.gamepad.buttons.length);
+        console.log('🎮 Number of axes:', e.gamepad.axes.length);
+        
+        // Test gamepad immediately on connection
+        setTimeout(() => {
+            console.log('🎮 Testing gamepad input - try moving sticks or pressing buttons...');
+        }, 1000);
+    });
+
+    window.addEventListener('gamepaddisconnected', (e) => {
+        console.log('🎮 Gamepad Disconnected:', e.gamepad.id);
+    });
+    
     // Start update loop
     update();
     
@@ -90,10 +107,32 @@ function update() {
         console.log(`🔄 Active input method changed to: ${inputMethod}`);
         if (inputMethod === 'gamepad') {
             console.log('🎮 ASUS ROG Ally controller detected and active!');
+            console.log('🎮 Controller should now work with D-pad, left stick, and A button');
         } else {
             console.log('⌨️ Using keyboard input');
         }
         lastInputMethod = inputMethod;
+    }
+    
+    // Debug gamepad state every few seconds when connected
+    if (inputMethod === 'gamepad' && Math.floor(Date.now() / 3000) % 10 === 0) {
+        const gamepad = navigator.getGamepads()[0];
+        if (gamepad) {
+            // Check if any buttons are pressed or sticks moved
+            const pressedButtons = [];
+            gamepad.buttons.forEach((button, index) => {
+                if (button.pressed) pressedButtons.push(index);
+            });
+            
+            const stickValues = {
+                leftX: gamepad.axes[0]?.toFixed(2) || 0,
+                leftY: gamepad.axes[1]?.toFixed(2) || 0
+            };
+            
+            if (pressedButtons.length > 0 || Math.abs(stickValues.leftX) > 0.1 || Math.abs(stickValues.leftY) > 0.1) {
+                console.log('🎮 Gamepad input detected:', { pressedButtons, stickValues });
+            }
+        }
     }
     
     // Handle button presses
