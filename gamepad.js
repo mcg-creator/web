@@ -235,8 +235,16 @@ class GamepadManager {
             const totalTabs = window.tabs.length;
             const newIndex = (currentIndex - 1 + totalTabs) % totalTabs;
             
+            console.log(`🎮 LB: Current tab index: ${currentIndex}, Total tabs: ${totalTabs}`);
+            console.log(`🎮 LB: Calculated new index: ${newIndex}`);
             console.log(`🎮 LB: Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
             console.log(`🎮 Current navigationFocus: ${window.navigationFocus}`);
+            
+            // Double-check that we're actually switching to a different tab
+            if (newIndex === currentIndex) {
+                console.warn(`🎮 LB: WARNING - newIndex same as currentIndex (${newIndex}), no tab switch will occur`);
+                return;
+            }
             
             // Check if we're in carousel mode and should maintain focus
             if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
@@ -248,6 +256,8 @@ class GamepadManager {
                 console.log(`🎮 LB: Normal tab switch (not in carousel mode)`);
                 window.selectTab(newIndex);
             }
+        } else {
+            console.error(`🎮 LB: Missing global variables - selectedIndex: ${window.selectedIndex}, tabs: ${window.tabs}`);
         }
     }
 
@@ -259,8 +269,16 @@ class GamepadManager {
             const totalTabs = window.tabs.length;
             const newIndex = (currentIndex + 1) % totalTabs;
             
+            console.log(`🎮 RB: Current tab index: ${currentIndex}, Total tabs: ${totalTabs}`);
+            console.log(`🎮 RB: Calculated new index: ${newIndex}`);
             console.log(`🎮 RB: Switching from tab ${currentIndex} to ${newIndex} (${window.tabs[newIndex]})`);
             console.log(`🎮 Current navigationFocus: ${window.navigationFocus}`);
+            
+            // Double-check that we're actually switching to a different tab
+            if (newIndex === currentIndex) {
+                console.warn(`🎮 RB: WARNING - newIndex same as currentIndex (${newIndex}), no tab switch will occur`);
+                return;
+            }
             
             // Check if we're in carousel mode and should maintain focus
             if (typeof window.navigationFocus !== 'undefined' && window.navigationFocus === 'carousel') {
@@ -272,13 +290,16 @@ class GamepadManager {
                 console.log(`🎮 RB: Normal tab switch (not in carousel mode)`);
                 window.selectTab(newIndex);
             }
+        } else {
+            console.error(`🎮 RB: Missing global variables - selectedIndex: ${window.selectedIndex}, tabs: ${window.tabs}`);
         }
     }
 
     // Switch tab while maintaining carousel focus
     switchTabMaintainCarouselFocus(newIndex) {
         // Use the exact same approach as keyboard Q/E keys
-        console.log(`🎮 switchTabMaintainCarouselFocus: Switching to tab ${newIndex} while maintaining carousel focus`);
+        console.log(`🎮 switchTabMaintainCarouselFocus: Starting tab switch to index ${newIndex}`);
+        console.log(`🎮 Before switch - window.selectedIndex: ${window.selectedIndex}`);
         
         // Store the current focus state (we know we're in carousel mode)
         const wasFocusedOnCarousel = true;
@@ -286,14 +307,18 @@ class GamepadManager {
         // Switch to the new tab - EXACTLY like keyboard Q/E keys
         // Update internal selectedIndex variable directly like keyboard does
         if (typeof window.updateInternalSelectedIndex === 'function') {
+            console.log(`🎮 Calling updateInternalSelectedIndex(${newIndex})`);
             window.updateInternalSelectedIndex(newIndex);
+            console.log(`🎮 After updateInternalSelectedIndex - window.selectedIndex: ${window.selectedIndex}`);
         } else {
             // Fallback to just updating window global
+            console.log(`🎮 Using fallback - setting window.selectedIndex = ${newIndex}`);
             window.selectedIndex = newIndex;
         }
         
         // Call renderNav directly instead of selectTab - exactly like keyboard Q/E
         if (typeof window.renderNav === 'function') {
+            console.log(`🎮 Calling renderNav()`);
             window.renderNav();
         } else {
             console.warn('🎮 window.renderNav not available');
@@ -301,19 +326,25 @@ class GamepadManager {
         
         // Restore carousel focus after tab switch - EXACTLY like keyboard Q/E
         setTimeout(() => {
+            console.log(`🎮 Restoring carousel focus after 50ms delay`);
+            
             // Update internal navigationFocus variable directly like keyboard does
             if (typeof window.updateInternalNavigationFocus === 'function') {
+                console.log(`🎮 Calling updateInternalNavigationFocus('carousel')`);
                 window.updateInternalNavigationFocus('carousel');
             } else {
                 // Fallback to just updating window global
+                console.log(`🎮 Using fallback - setting window.navigationFocus = 'carousel'`);
                 window.navigationFocus = 'carousel';
             }
             
             if (typeof window.updateFocusVisuals === 'function') {
+                console.log(`🎮 Calling updateFocusVisuals()`);
                 window.updateFocusVisuals();
             } else {
                 console.warn('🎮 window.updateFocusVisuals not available');
             }
+            console.log(`🎮 Final state - selectedIndex: ${window.selectedIndex}, navigationFocus: ${window.navigationFocus}`);
             console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
         }, 50);
         
