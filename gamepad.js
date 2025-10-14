@@ -37,7 +37,7 @@ class GamepadManager {
         this.stickThreshold = 0.5;      // Threshold for stick direction detection
 
         // Input debouncing to prevent rapid-fire inputs
-        this.inputCooldown = 200;       // Milliseconds between inputs (200ms = 5 inputs/second max)
+        this.inputCooldown = 100;       // Milliseconds between inputs (100ms = 10 inputs/second max)
         this.lastInputTime = new Map(); // Track last input time for each direction/button
 
         // Current and previous gamepad states
@@ -132,11 +132,14 @@ class GamepadManager {
     canProcessInput(inputKey) {
         const now = Date.now();
         const lastTime = this.lastInputTime.get(inputKey) || 0;
+        const timeDiff = now - lastTime;
         
-        if (now - lastTime >= this.inputCooldown) {
+        if (timeDiff >= this.inputCooldown) {
             this.lastInputTime.set(inputKey, now);
+            console.log(`🎮 Input allowed: ${inputKey} (${timeDiff}ms since last)`);
             return true;
         }
+        console.log(`🎮 Input blocked: ${inputKey} (${timeDiff}ms < ${this.inputCooldown}ms)`);
         return false;
     }
 
@@ -217,23 +220,65 @@ class GamepadManager {
         }
     }
 
+    // Temporarily disable/enable debouncing for testing
+    setDebouncing(enabled) {
+        if (enabled) {
+            this.inputCooldown = 100; // Re-enable with 100ms
+        } else {
+            this.inputCooldown = 0; // Disable debouncing
+        }
+        console.log(`🎮 Debouncing ${enabled ? 'enabled' : 'disabled'}: cooldown=${this.inputCooldown}ms`);
+    }
+
     // Adjust input sensitivity for ROG Ally
     setSensitivity(mode = 'normal') {
         switch(mode) {
             case 'low':
-                this.inputCooldown = 300; // Slower response
+                this.inputCooldown = 150; // Slower response
                 this.stickThreshold = 0.7; // Require more stick movement
                 break;
             case 'normal':
-                this.inputCooldown = 200; // Default
+                this.inputCooldown = 100; // Default
                 this.stickThreshold = 0.5; // Default
                 break;
             case 'high':
-                this.inputCooldown = 100; // Faster response
+                this.inputCooldown = 50; // Faster response
                 this.stickThreshold = 0.3; // Less stick movement needed
                 break;
         }
         console.log(`🎮 Sensitivity set to ${mode}: cooldown=${this.inputCooldown}ms, threshold=${this.stickThreshold}`);
+    }
+
+    // Debug function to test gamepad detection
+    testGamepadDetection() {
+        const gamepads = navigator.getGamepads();
+        console.log('🎮 Gamepad detection test:');
+        console.log('Navigator.getGamepads():', gamepads);
+        
+        for (let i = 0; i < gamepads.length; i++) {
+            if (gamepads[i]) {
+                console.log(`🎮 Gamepad ${i}:`, {
+                    id: gamepads[i].id,
+                    buttons: gamepads[i].buttons.length,
+                    axes: gamepads[i].axes.length,
+                    connected: gamepads[i].connected
+                });
+                
+                // Check for any pressed buttons
+                for (let j = 0; j < gamepads[i].buttons.length; j++) {
+                    if (gamepads[i].buttons[j].pressed) {
+                        console.log(`🎮 Button ${j} is currently pressed`);
+                    }
+                }
+            }
+        }
+        
+        if (!gamepads.some(gp => gp && gp.connected)) {
+            console.log('⚠️ No gamepads detected. Check:');
+            console.log('- ROG Ally is in Gamepad Mode (ROG + X)');
+            console.log('- Browser supports Gamepad API');
+            console.log('- You clicked on the page first');
+        }
     }
 
     // Get the first connected gamepad
