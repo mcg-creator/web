@@ -2588,6 +2588,18 @@
         hasBackground: false
       },
       {
+        id: "copilot8",
+        title: "AI Analysis",
+        type: "single",
+        hasBackground: false
+      },
+      {
+        id: "copilot9",
+        title: "Smart Debugging",
+        type: "single",
+        hasBackground: false
+      },
+      {
         id: "tools-stack",
         title: "AI Tools",
         type: "stack",
@@ -2682,6 +2694,17 @@
       console.log('🤖 Initializing copilot items...');
       copilotItems = [...copilotConfig];
       console.log(`Created ${copilotItems.length} copilot items:`, copilotItems.map(c => c.title));
+      
+      // Preload focus images for all copilot items
+      copilotItems.forEach(copilotItem => {
+        if (copilotItem.type === 'single') {
+          preloadFocusImage(`assets/copilot/${copilotItem.id}_focus.png`);
+        } else if (copilotItem.type === 'stack' && copilotItem.items) {
+          copilotItem.items.forEach(item => {
+            preloadFocusImage(`assets/copilot/${item.id}_focus.png`);
+          });
+        }
+      });
       
       createCopilotCards();
       updateCopilotCarousel();
