@@ -277,10 +277,13 @@ class GamepadManager {
 
     // Switch tab while maintaining carousel focus
     switchTabMaintainCarouselFocus(newIndex) {
-        // Use the same approach as keyboard Q/E keys - bypass selectTab function entirely
+        // Use the exact same approach as keyboard Q/E keys
         console.log(`🎮 switchTabMaintainCarouselFocus: Switching to tab ${newIndex} while maintaining carousel focus`);
         
-        // Directly update the tab index without calling selectTab (which resets focus)
+        // Store the current focus state (we know we're in carousel mode)
+        const wasFocusedOnCarousel = true;
+        
+        // Switch to the new tab - exactly like keyboard Q/E
         window.selectedIndex = newIndex;
         
         // Call renderNav directly instead of selectTab
@@ -288,14 +291,13 @@ class GamepadManager {
             window.renderNav();
         }
         
-        // Restore carousel focus after tab switch (same timing as keyboard)
+        // Restore carousel focus after tab switch - EXACTLY like keyboard Q/E
         setTimeout(() => {
             window.navigationFocus = 'carousel';
             if (typeof window.updateFocusVisuals === 'function') {
                 window.updateFocusVisuals();
             }
             console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
-            console.log(`🎮 Final navigationFocus state: ${window.navigationFocus}`);
         }, 50);
         
         // Play navigation sound

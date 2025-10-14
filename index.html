@@ -1493,6 +1493,13 @@
     window.tabs = tabs;
     window.selectedIndex = selectedIndex;
     window.navigationFocus = navigationFocus;
+    
+    // Make carousel index variables accessible to gamepad system
+    window.currentGameIndex = currentGameIndex;
+    window.currentAppIndex = currentAppIndex;
+    window.currentFriendIndex = currentFriendIndex;
+    window.currentNotifyIndex = currentNotifyIndex;
+    window.currentGalleryIndex = currentGalleryIndex;
     const nav = document.getElementById("top-nav");
     const content = document.getElementById("content");
     const gamesCarousel = document.getElementById("games-carousel");
@@ -2089,6 +2096,9 @@
 
     // Make updateFocusVisuals function globally accessible for gamepad
     window.updateFocusVisuals = updateFocusVisuals;
+    
+    // Make renderNav function globally accessible for gamepad
+    window.renderNav = renderNav;
 
     // Enhanced keyboard support with two-level navigation
     document.addEventListener("keydown", (e) => {
