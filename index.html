@@ -1766,11 +1766,17 @@
       
       // Determine which image to show
       if (currentTab === 'games' && navigationFocus === 'carousel') {
-        newSrc = 'assets/btns/play.png';
+        // Check which game is currently selected in the games carousel
+        const currentGame = games[currentGameIndex];
+        if (currentGame && currentGame.id === 'ea') {
+          newSrc = 'assets/btns/details.png';
+        } else {
+          newSrc = 'assets/btns/play.png';
+        }
       } else if (currentTab === 'apps' && navigationFocus === 'carousel') {
         // Check which app is currently selected in the apps carousel
         const currentApp = apps[currentAppIndex];
-        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam')) {
+        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'ea')) {
           newSrc = 'assets/btns/details.png';
         } else {
           newSrc = 'assets/btns/open.png';
@@ -1862,6 +1868,10 @@
               newSrc = 'assets/btns/copilot/video.png';
             } else if (currentCopilotItem.id === 'copilot2') {
               newSrc = 'assets/btns/copilot/controller.png';
+            } else if (currentCopilotItem.id === 'copilot8') {
+              newSrc = 'assets/btns/copilot/yes.png';
+            } else if (currentCopilotItem.id === 'copilot9') {
+              newSrc = 'assets/btns/copilot/share.png';
             } else if (currentCopilotItem.id === 'copilot1') {
               newSrc = 'assets/btns/copilot/video.png';
             } else if (currentCopilotItem.id === 'copilot3') {
