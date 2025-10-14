@@ -1781,7 +1781,13 @@
           newSrc = 'assets/btns/open.png';
         }
       } else if (currentTab === 'friends' && navigationFocus === 'carousel') {
-        newSrc = 'assets/btns/message.png';
+        // Check which friend is currently in focus
+        const currentFriend = friends[currentFriendIndex];
+        if (currentFriend && (currentFriend.id === 'friend2' || currentFriend.id === 'friend7')) {
+          newSrc = 'assets/btns/join.png';
+        } else {
+          newSrc = 'assets/btns/message.png';
+        }
       } else if (currentTab === 'notifications' && navigationFocus === 'carousel') {
         // Check which notification is currently in focus
         const currentNotification = notifications[currentNotifyIndex];
