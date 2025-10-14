@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ROG Ally Demo</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -1488,18 +1488,6 @@
 
     let selectedIndex = 0;
     let navigationFocus = "nav"; // "nav" for navigation bar, "carousel" for games/apps carousel
-    
-    // Make navigation variables accessible to gamepad system
-    window.tabs = tabs;
-    window.selectedIndex = selectedIndex;
-    window.navigationFocus = navigationFocus;
-    
-    // Make carousel index variables accessible to gamepad system
-    window.currentGameIndex = currentGameIndex;
-    window.currentAppIndex = currentAppIndex;
-    window.currentFriendIndex = currentFriendIndex;
-    window.currentNotifyIndex = currentNotifyIndex;
-    window.currentGalleryIndex = currentGalleryIndex;
     const nav = document.getElementById("top-nav");
     const content = document.getElementById("content");
     const gamesCarousel = document.getElementById("games-carousel");
@@ -1782,19 +1770,13 @@
       } else if (currentTab === 'apps' && navigationFocus === 'carousel') {
         // Check which app is currently selected in the apps carousel
         const currentApp = apps[currentAppIndex];
-        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'ea')) {
+        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam')) {
           newSrc = 'assets/btns/details.png';
         } else {
           newSrc = 'assets/btns/open.png';
         }
       } else if (currentTab === 'friends' && navigationFocus === 'carousel') {
-        // Check which friend is currently in focus
-        const currentFriend = friends[currentFriendIndex];
-        if (currentFriend && (currentFriend.id === 'friend2' || currentFriend.id === 'friend7')) {
-          newSrc = 'assets/btns/join.png';
-        } else {
-          newSrc = 'assets/btns/message.png';
-        }
+        newSrc = 'assets/btns/message.png';
       } else if (currentTab === 'notifications' && navigationFocus === 'carousel') {
         // Check which notification is currently in focus
         const currentNotification = notifications[currentNotifyIndex];
@@ -1874,10 +1856,6 @@
             // Single card mapping for copilot items
             if (currentCopilotItem.id === 'copilot7') {
               newSrc = 'assets/btns/copilot/talk.png';
-            } else if (currentCopilotItem.id === 'copilot8') {
-              newSrc = 'assets/btns/copilot/yes.png';
-            } else if (currentCopilotItem.id === 'copilot9') {
-              newSrc = 'assets/btns/copilot/edit_video.png';
             } else if (currentCopilotItem.id === 'copilot6') {
               newSrc = 'assets/btns/copilot/remind.png';
             } else if (currentCopilotItem.id === 'copilot5') {
@@ -1966,11 +1944,6 @@
     function selectTab(i) {
       selectedIndex = i;
       navigationFocus = "nav"; // Reset focus to nav when changing tabs
-      
-      // Update global window variables for gamepad access
-      window.selectedIndex = selectedIndex;
-      window.navigationFocus = navigationFocus;
-      
       renderNav();
       // Play navigation sound
       if (window.playNavSound) {
@@ -1978,14 +1951,7 @@
       }
     }
 
-    // Make selectTab function globally accessible for gamepad
-    window.selectTab = selectTab;
-
     function updateFocusVisuals() {
-      // Update global window variables for gamepad access
-      window.selectedIndex = selectedIndex;
-      window.navigationFocus = navigationFocus;
-      
       // Update visual indicators for navigation focus
       const navItems = document.querySelectorAll('.nav-item');
       const gamesCarouselWrapper = document.querySelector('.games-carousel-wrapper');
@@ -2094,30 +2060,12 @@
       updateBottomControls();
     }
 
-    // Make updateFocusVisuals function globally accessible for gamepad
-    window.updateFocusVisuals = updateFocusVisuals;
-    
-    // Make renderNav function globally accessible for gamepad
-    window.renderNav = renderNav;
-    
-    // Helper functions for gamepad to update internal variables
-    window.updateInternalSelectedIndex = function(newIndex) {
-        selectedIndex = newIndex;
-        window.selectedIndex = selectedIndex;
-    };
-    
-    window.updateInternalNavigationFocus = function(newFocus) {
-        navigationFocus = newFocus;
-        window.navigationFocus = navigationFocus;
-    };
-
     // Enhanced keyboard support with two-level navigation
     document.addEventListener("keydown", (e) => {
       if (navigationFocus === "nav") {
         // Navigation bar is focused - left/right moves through tabs
         if (e.key === "ArrowRight") {
           selectedIndex = (selectedIndex + 1) % tabs.length;
-          window.selectedIndex = selectedIndex; // Update global variable
           renderNav();
           // Play navigation sound
           if (window.playNavSound) {
@@ -2126,7 +2074,6 @@
           e.preventDefault();
         } else if (e.key === "ArrowLeft") {
           selectedIndex = (selectedIndex - 1 + tabs.length) % tabs.length;
-          window.selectedIndex = selectedIndex; // Update global variable
           renderNav();
           // Play navigation sound
           if (window.playNavSound) {
@@ -2137,7 +2084,6 @@
           // Move focus down to carousel (games, apps, friends, gallery, notifications, settings, or copilot)
           if (tabs[selectedIndex] === "games" || tabs[selectedIndex] === "apps" || tabs[selectedIndex] === "friends" || tabs[selectedIndex] === "gallery" || tabs[selectedIndex] === "notifications" || tabs[selectedIndex] === "settings" || tabs[selectedIndex] === "copilot") {
             navigationFocus = "carousel";
-            window.navigationFocus = navigationFocus; // Update global variable
             updateFocusVisuals();
             // Play carousel sound when moving from nav to carousel
             if (window.playCarouselSound) {
@@ -2196,7 +2142,6 @@
             // Try to navigate within stack first, if it returns false then go to nav bar
             if (!navigateStackItems('up')) {
               navigationFocus = "nav";
-              window.navigationFocus = navigationFocus; // Update global variable
               updateFocusVisuals();
               // Play nav sound when moving from carousel to nav
               if (window.playNavSound) {
@@ -2207,7 +2152,6 @@
             // Try to navigate within stack first, if it returns false then go to nav bar
             if (!navigateCopilotStackItems('up')) {
               navigationFocus = "nav";
-              window.navigationFocus = navigationFocus; // Update global variable
               updateFocusVisuals();
               // Play nav sound when moving from carousel to nav
               if (window.playNavSound) {
@@ -2216,7 +2160,6 @@
             }
           } else {
             navigationFocus = "nav";
-            window.navigationFocus = navigationFocus; // Update global variable
             updateFocusVisuals();
             // Play nav sound when moving from carousel to nav
             if (window.playNavSound) {
@@ -2252,80 +2195,6 @@
         e.preventDefault();
       } else if (e.key === "d") {
         e.preventDefault(); // Prevent zoom control
-      } else if (e.key === "q" || e.key === "Q") {
-        // Previous tab (LB equivalent)
-        const currentIndex = selectedIndex;
-        const totalTabs = tabs.length;
-        const newIndex = (currentIndex - 1 + totalTabs) % totalTabs;
-        
-        console.log(`⌨️ Q key (LB): Switching from tab ${currentIndex} to ${newIndex} (${tabs[newIndex]})`);
-        
-        // Check if we're in carousel mode and should maintain focus
-        if (navigationFocus === 'carousel') {
-          // Store the current focus state
-          const wasFocusedOnCarousel = true;
-          
-          // Switch to the new tab
-          selectedIndex = newIndex;
-          window.selectedIndex = selectedIndex;
-          renderNav();
-          
-          // Restore carousel focus after tab switch
-          setTimeout(() => {
-            navigationFocus = 'carousel';
-            window.navigationFocus = navigationFocus;
-            updateFocusVisuals();
-            console.log(`⌨️ Maintained carousel focus in new tab: ${tabs[newIndex]}`);
-          }, 50);
-        } else {
-          // Normal tab switch (will reset to nav focus)
-          selectedIndex = newIndex;
-          window.selectedIndex = selectedIndex;
-          renderNav();
-        }
-        
-        // Play navigation sound
-        if (window.playNavSound) {
-          window.playNavSound();
-        }
-        e.preventDefault();
-      } else if (e.key === "e" || e.key === "E") {
-        // Next tab (RB equivalent)
-        const currentIndex = selectedIndex;
-        const totalTabs = tabs.length;
-        const newIndex = (currentIndex + 1) % totalTabs;
-        
-        console.log(`⌨️ E key (RB): Switching from tab ${currentIndex} to ${newIndex} (${tabs[newIndex]})`);
-        
-        // Check if we're in carousel mode and should maintain focus
-        if (navigationFocus === 'carousel') {
-          // Store the current focus state
-          const wasFocusedOnCarousel = true;
-          
-          // Switch to the new tab
-          selectedIndex = newIndex;
-          window.selectedIndex = selectedIndex;
-          renderNav();
-          
-          // Restore carousel focus after tab switch
-          setTimeout(() => {
-            navigationFocus = 'carousel';
-            window.navigationFocus = navigationFocus;
-            updateFocusVisuals();
-            console.log(`⌨️ Maintained carousel focus in new tab: ${tabs[newIndex]}`);
-          }, 50);
-        } else {
-          // Normal tab switch (will reset to nav focus)
-          selectedIndex = newIndex;
-          window.selectedIndex = selectedIndex;
-          renderNav();
-        }
-        
-        // Play navigation sound
-        if (window.playNavSound) {
-          window.playNavSound();
-        }
-        e.preventDefault();
       }
     });
 
@@ -2619,18 +2488,6 @@
         hasBackground: false
       },
       {
-        id: "copilot8",
-        title: "AI Analysis",
-        type: "single",
-        hasBackground: false
-      },
-      {
-        id: "copilot9",
-        title: "Smart Debugging",
-        type: "single",
-        hasBackground: false
-      },
-      {
         id: "tools-stack",
         title: "AI Tools",
         type: "stack",
@@ -2725,17 +2582,6 @@
       console.log('🤖 Initializing copilot items...');
       copilotItems = [...copilotConfig];
       console.log(`Created ${copilotItems.length} copilot items:`, copilotItems.map(c => c.title));
-      
-      // Preload focus images for all copilot items
-      copilotItems.forEach(copilotItem => {
-        if (copilotItem.type === 'single') {
-          preloadFocusImage(`assets/copilot/${copilotItem.id}_focus.png`);
-        } else if (copilotItem.type === 'stack' && copilotItem.items) {
-          copilotItem.items.forEach(item => {
-            preloadFocusImage(`assets/copilot/${item.id}_focus.png`);
-          });
-        }
-      });
       
       createCopilotCards();
       updateCopilotCarousel();
@@ -3271,7 +3117,6 @@
   <script src="gamepad.js"></script>
   <script src="input.js"></script>
   <script src="lockscreen.js"></script>
-  <script src="gamepad-diagnostic.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

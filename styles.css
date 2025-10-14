@@ -17,55 +17,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-
-/* ASUS ROG Ally specific optimizations */
-/* ASUS ROG Ally specific optimizations */
-@media screen and (width: 1920px) and (height: 1080px) {
-    body {
-        transform: none; /* Reset any body transforms */
-        transform-origin: center center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
-}
-
-@media screen and (width: 1280px) and (height: 800px) {
-    body {
-        padding: 0; /* Reset padding for Steam Deck */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-    }
-}
-
-/* Universal handheld gaming device optimization */
-@media screen and (max-width: 1920px) and (max-height: 1200px) {
-    html {
-        overflow: hidden;
-    }
-    
-    body {
-        width: 100vw;
-        height: 100vh;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        position: fixed;
-        top: 0;
-        left: 0;
-    }
 }
 
 /* Ensure the main app container maintains 16:9 aspect ratio (1280x720) */
@@ -376,48 +327,6 @@ html, body {
     justify-content: center;
     opacity: 0;
     transition: opacity 0.01s;
-    margin: 0 auto;
-    position: relative;
-}
-
-/* ROG Ally and handheld gaming device optimizations */
-@media screen and (max-width: 1920px) and (max-height: 1200px) {
-    #app {
-        /* Ensure app takes optimal space on gaming handhelds */
-        width: min(100vw, 1280px);
-        height: min(100vh, 720px);
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-}
-
-/* Specific optimization for ASUS ROG Ally (1920x1080 display) */
-@media screen and (width: 1920px) and (height: 1080px) {
-    #app {
-        width: 1280px;
-        height: 720px;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        margin: 0;
-    }
-}
-
-/* Steam Deck optimization (1280x800) */
-@media screen and (width: 1280px) and (height: 800px) {
-    #app {
-        width: 1280px;
-        height: 720px;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        margin: 0;
-    }
 }
 
 #app.ready {
@@ -435,32 +344,6 @@ html, body {
     background-size: 100% 100%; /* Force background to fill exact container dimensions */
     overflow: hidden; /* Prevent any background overflow */
     transition: background-image 0.5s ease-in-out;
-    margin: 0 auto;
-}
-
-/* ROG Ally specific game container optimizations */
-@media screen and (width: 1920px) and (height: 1080px) {
-    #game-container {
-        width: 1280px;
-        height: 720px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin: 0;
-        transform: none;
-    }
-}
-
-@media screen and (width: 1280px) and (height: 800px) {
-    #game-container {
-        width: 1280px;
-        height: 720px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin: 0;
-        transform: none;
-    }
 }
 
 /* Individual game backgrounds */

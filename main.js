@@ -69,8 +69,8 @@ function init() {
     // Display controls info
     console.log('🎮 ASUS ROG Ally Controller + Keyboard Support Enabled!');
     console.log('📋 Controls:');
-    console.log('  🎮 ASUS ROG Ally: D-pad + Left Stick for navigation, A button for selection, LB/RB for quick tab switching');
-    console.log('  ⌨️ Keyboard: Arrow keys for navigation, A/S/Spacebar for selection, Q/E for quick tab switching');
+    console.log('  🎮 ASUS ROG Ally: D-pad + Left Stick for navigation, A button for selection');
+    console.log('  ⌨️ Keyboard: Arrow keys for navigation, A/S/Spacebar for selection');
     console.log('Keyboard Controls:', inputManager.getKeyboardControls());
 }
 
