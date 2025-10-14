@@ -17,6 +17,39 @@ class GamepadDiagnostic {
         console.log('📋 Use startDiagnostic() to begin testing');
     }
     
+    createDiagnosticButton() {
+        // Create a floating diagnostic button for touch access
+        const button = document.createElement('div');
+        button.id = 'diagnostic-button';
+        button.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 9999;
+            user-select: none;
+            border: 2px solid #ff0000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        `;
+        button.innerHTML = '🔍';
+        button.title = 'Open Gamepad Diagnostic';
+        
+        button.onclick = () => {
+            this.toggleDiagnostic();
+        };
+        
+        document.body.appendChild(button);
+    }
+    
     createDiagnosticUI() {
         // Create diagnostic overlay
         const overlay = document.createElement('div');
@@ -45,6 +78,9 @@ class GamepadDiagnostic {
             <button id="start-diagnostic" style="margin: 10px 5px 0 0; padding: 5px 10px;">Start Test</button>
             <button id="stop-diagnostic" style="margin: 10px 5px 0 0; padding: 5px 10px;">Stop Test</button>
             <button id="close-diagnostic" style="margin: 10px 5px 0 0; padding: 5px 10px;">Close</button>
+            <div style="margin-top: 10px; padding: 8px; background: rgba(255,255,0,0.1); border-radius: 5px;">
+                <small style="color: #ffff00;">💡 Gamepad Shortcut: Hold LB + RB + Menu for 2 seconds</small>
+            </div>
         `;
         
         document.body.appendChild(overlay);
@@ -68,13 +104,12 @@ class GamepadDiagnostic {
             this.updateStatus(`❌ Gamepad Disconnected: ${e.gamepad.id}`);
         });
         
-        // Add keyboard shortcut to show/hide diagnostic
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                this.toggleDiagnostic();
-            }
-        });
+        // Add gamepad combo to show/hide diagnostic (LB + RB + Start)
+        this.gamepadComboTimer = null;
+        this.gamepadComboActive = false;
+        
+        // Also add touch/click area for easy access
+        this.createDiagnosticButton();
     }
     
     logGamepadInfo(gamepad) {
@@ -124,6 +159,10 @@ class GamepadDiagnostic {
     
     runDiagnosticCheck() {
         const gamepads = navigator.getGamepads();
+        
+        // Check for gamepad combo (LB + RB + Menu) to toggle diagnostic
+        this.checkGamepadCombo(gamepads);
+        
         let diagnosticData = '<h4>🎮 Gamepad Status:</h4>';
         
         // Check if any gamepads are available
@@ -158,10 +197,40 @@ class GamepadDiagnostic {
         diagnosticData += '• ASUS ROG Ally should appear as "Xbox Controller"<br>';
         diagnosticData += '• Try pressing any button to wake up controller<br>';
         diagnosticData += '• Check Windows > Settings > Gaming > Xbox Game Bar<br>';
-        diagnosticData += '• Use Ctrl+D to toggle this diagnostic panel<br>';
+        diagnosticData += '• Click red 🔍 button in top-left to toggle this panel<br>';
+        diagnosticData += '• Or hold LB + RB + Menu for 2 seconds<br>';
         diagnosticData += '</div>';
         
         this.updateData(diagnosticData);
+    }
+    
+    checkGamepadCombo(gamepads) {
+        // Check for LB + RB + Menu button combo to toggle diagnostic
+        for (const gamepad of gamepads) {
+            if (gamepad && gamepad.connected) {
+                const lb = gamepad.buttons[4]?.pressed; // LB
+                const rb = gamepad.buttons[5]?.pressed; // RB  
+                const menu = gamepad.buttons[9]?.pressed; // Menu/Start
+                
+                if (lb && rb && menu) {
+                    if (!this.gamepadComboActive) {
+                        this.gamepadComboActive = true;
+                        this.gamepadComboTimer = setTimeout(() => {
+                            console.log('🎮 Gamepad combo detected! Toggling diagnostic...');
+                            this.toggleDiagnostic();
+                            this.gamepadComboActive = false;
+                        }, 2000); // Hold for 2 seconds
+                    }
+                } else {
+                    if (this.gamepadComboTimer) {
+                        clearTimeout(this.gamepadComboTimer);
+                        this.gamepadComboTimer = null;
+                    }
+                    this.gamepadComboActive = false;
+                }
+                break; // Only check first gamepad
+            }
+        }
     }
     
     formatGamepadData(gamepad, index) {
@@ -245,9 +314,21 @@ let gamepadDiagnostic;
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         gamepadDiagnostic = new GamepadDiagnostic();
+        // Auto-show diagnostic panel for immediate troubleshooting
+        setTimeout(() => {
+            gamepadDiagnostic.showDiagnostic();
+            gamepadDiagnostic.startDiagnostic();
+            console.log('🎮 Auto-started diagnostic for ROG Ally troubleshooting');
+        }, 2000);
     });
 } else {
     gamepadDiagnostic = new GamepadDiagnostic();
+    // Auto-show diagnostic panel for immediate troubleshooting
+    setTimeout(() => {
+        gamepadDiagnostic.showDiagnostic();
+        gamepadDiagnostic.startDiagnostic();
+        console.log('🎮 Auto-started diagnostic for ROG Ally troubleshooting');
+    }, 2000);
 }
 
 // Global functions for easy console access
@@ -265,7 +346,8 @@ window.stopGamepadDiagnostic = () => {
 };
 
 console.log('🔍 ASUS ROG Ally Diagnostic Tool Loaded');
-console.log('📋 Available commands:');
+console.log('📋 Available access methods:');
+console.log('  • Touch the red 🔍 button in top-left corner');
+console.log('  • Hold LB + RB + Menu buttons for 2 seconds on gamepad');
 console.log('  • startGamepadDiagnostic() - Show diagnostic panel');
 console.log('  • stopGamepadDiagnostic() - Stop diagnostic');
-console.log('  • Press Ctrl+D to toggle diagnostic panel');
