@@ -3073,6 +3073,41 @@
       return true; // Handled the navigation
     }
 
+    // Gamepad initialization and polling
+    let gamepadManager = null;
+    
+    function initializeGamepad() {
+      console.log('🎮 Initializing gamepad controls...');
+      gamepadManager = new GamepadManager();
+      
+      // Check for gamepads immediately
+      const gamepads = navigator.getGamepads();
+      console.log('🎮 Available gamepads:', gamepads);
+      let foundGamepad = false;
+      for (let i = 0; i < gamepads.length; i++) {
+        if (gamepads[i]) {
+          console.log(`🎮 Gamepad ${i}: ${gamepads[i].id}`);
+          foundGamepad = true;
+        }
+      }
+      
+      if (!foundGamepad) {
+        console.log('⚠️ No gamepads detected. Make sure your ASUS ROG Ally is connected and recognized.');
+      }
+      
+      // Start the gamepad polling loop
+      function gamepadLoop() {
+        if (gamepadManager) {
+          gamepadManager.update();
+        }
+        requestAnimationFrame(gamepadLoop);
+      }
+      
+      // Start the polling loop
+      requestAnimationFrame(gamepadLoop);
+      console.log('🎮 Gamepad polling started');
+    }
+
     // Initialize the interface
     document.addEventListener('DOMContentLoaded', async () => {
       console.log('🎮 Starting ROG Ally Game Interface...');
@@ -3103,6 +3138,9 @@
       await initializeSettings();
       await initializeCopilot();
       createDynamicCSS(); // Create CSS after games, apps, friends, notifications, gallery, settings, and copilot are loaded
+      
+      // Initialize gamepad controls
+      initializeGamepad();
       
       // Set the initial background immediately for the starting tab (games)
       // This prevents the background from flickering when the page loads
