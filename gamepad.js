@@ -277,27 +277,30 @@ class GamepadManager {
 
     // Switch tab while maintaining carousel focus
     switchTabMaintainCarouselFocus(newIndex) {
-        if (typeof window.selectTab === 'function') {
-            // Store the current focus state
-            const wasFocusedOnCarousel = window.navigationFocus === 'carousel';
-            console.log(`🎮 switchTabMaintainCarouselFocus: wasFocusedOnCarousel = ${wasFocusedOnCarousel}`);
-            
-            // Switch to the new tab
-            window.selectTab(newIndex);
-            
-            // If we were focused on carousel, restore that focus
-            if (wasFocusedOnCarousel) {
-                // Longer delay to ensure tab switch is complete and HTML has finished processing
-                setTimeout(() => {
-                    console.log(`🎮 Restoring carousel focus after tab switch`);
-                    window.navigationFocus = 'carousel';
-                    if (typeof window.updateFocusVisuals === 'function') {
-                        window.updateFocusVisuals();
-                    }
-                    console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
-                    console.log(`🎮 Final navigationFocus state: ${window.navigationFocus}`);
-                }, 100); // Increased from 50ms to 100ms
+        // Use the same approach as keyboard Q/E keys - bypass selectTab function entirely
+        console.log(`🎮 switchTabMaintainCarouselFocus: Switching to tab ${newIndex} while maintaining carousel focus`);
+        
+        // Directly update the tab index without calling selectTab (which resets focus)
+        window.selectedIndex = newIndex;
+        
+        // Call renderNav directly instead of selectTab
+        if (typeof window.renderNav === 'function') {
+            window.renderNav();
+        }
+        
+        // Restore carousel focus after tab switch (same timing as keyboard)
+        setTimeout(() => {
+            window.navigationFocus = 'carousel';
+            if (typeof window.updateFocusVisuals === 'function') {
+                window.updateFocusVisuals();
             }
+            console.log(`🎮 Maintained carousel focus in new tab: ${window.tabs[newIndex]}`);
+            console.log(`🎮 Final navigationFocus state: ${window.navigationFocus}`);
+        }, 50);
+        
+        // Play navigation sound
+        if (window.playNavSound) {
+            window.playNavSound();
         }
     }
 
