@@ -1488,6 +1488,11 @@
 
     let selectedIndex = 0;
     let navigationFocus = "nav"; // "nav" for navigation bar, "carousel" for games/apps carousel
+    
+    // Make navigation variables accessible to gamepad system
+    window.tabs = tabs;
+    window.selectedIndex = selectedIndex;
+    window.navigationFocus = navigationFocus;
     const nav = document.getElementById("top-nav");
     const content = document.getElementById("content");
     const gamesCarousel = document.getElementById("games-carousel");
@@ -1944,6 +1949,11 @@
     function selectTab(i) {
       selectedIndex = i;
       navigationFocus = "nav"; // Reset focus to nav when changing tabs
+      
+      // Update global window variables for gamepad access
+      window.selectedIndex = selectedIndex;
+      window.navigationFocus = navigationFocus;
+      
       renderNav();
       // Play navigation sound
       if (window.playNavSound) {
@@ -1951,7 +1961,14 @@
       }
     }
 
+    // Make selectTab function globally accessible for gamepad
+    window.selectTab = selectTab;
+
     function updateFocusVisuals() {
+      // Update global window variables for gamepad access
+      window.selectedIndex = selectedIndex;
+      window.navigationFocus = navigationFocus;
+      
       // Update visual indicators for navigation focus
       const navItems = document.querySelectorAll('.nav-item');
       const gamesCarouselWrapper = document.querySelector('.games-carousel-wrapper');
@@ -2060,12 +2077,16 @@
       updateBottomControls();
     }
 
+    // Make updateFocusVisuals function globally accessible for gamepad
+    window.updateFocusVisuals = updateFocusVisuals;
+
     // Enhanced keyboard support with two-level navigation
     document.addEventListener("keydown", (e) => {
       if (navigationFocus === "nav") {
         // Navigation bar is focused - left/right moves through tabs
         if (e.key === "ArrowRight") {
           selectedIndex = (selectedIndex + 1) % tabs.length;
+          window.selectedIndex = selectedIndex; // Update global variable
           renderNav();
           // Play navigation sound
           if (window.playNavSound) {
@@ -2074,6 +2095,7 @@
           e.preventDefault();
         } else if (e.key === "ArrowLeft") {
           selectedIndex = (selectedIndex - 1 + tabs.length) % tabs.length;
+          window.selectedIndex = selectedIndex; // Update global variable
           renderNav();
           // Play navigation sound
           if (window.playNavSound) {
@@ -2084,6 +2106,7 @@
           // Move focus down to carousel (games, apps, friends, gallery, notifications, settings, or copilot)
           if (tabs[selectedIndex] === "games" || tabs[selectedIndex] === "apps" || tabs[selectedIndex] === "friends" || tabs[selectedIndex] === "gallery" || tabs[selectedIndex] === "notifications" || tabs[selectedIndex] === "settings" || tabs[selectedIndex] === "copilot") {
             navigationFocus = "carousel";
+            window.navigationFocus = navigationFocus; // Update global variable
             updateFocusVisuals();
             // Play carousel sound when moving from nav to carousel
             if (window.playCarouselSound) {
@@ -2142,6 +2165,7 @@
             // Try to navigate within stack first, if it returns false then go to nav bar
             if (!navigateStackItems('up')) {
               navigationFocus = "nav";
+              window.navigationFocus = navigationFocus; // Update global variable
               updateFocusVisuals();
               // Play nav sound when moving from carousel to nav
               if (window.playNavSound) {
@@ -2152,6 +2176,7 @@
             // Try to navigate within stack first, if it returns false then go to nav bar
             if (!navigateCopilotStackItems('up')) {
               navigationFocus = "nav";
+              window.navigationFocus = navigationFocus; // Update global variable
               updateFocusVisuals();
               // Play nav sound when moving from carousel to nav
               if (window.playNavSound) {
@@ -2160,6 +2185,7 @@
             }
           } else {
             navigationFocus = "nav";
+            window.navigationFocus = navigationFocus; // Update global variable
             updateFocusVisuals();
             // Play nav sound when moving from carousel to nav
             if (window.playNavSound) {
