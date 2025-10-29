@@ -7,7 +7,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #1a1a2e;
+    background: #000000 url('assets/bg/controller.png') no-repeat center center;
     color: #ffffff;
     margin: 0;
     padding: 0;
@@ -327,6 +327,8 @@ html, body {
     justify-content: center;
     opacity: 0;
     transition: opacity 0.01s;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 #app.ready {
