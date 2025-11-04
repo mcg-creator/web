@@ -461,11 +461,11 @@
       
       // We'll try to detect apps by attempting to load images
       const potentialApps = [
-        'xbox', 'discord', 'spotify', 'steam', 'ea', 'netflix',
-        'chrome', 'firefox', 'edge', 'vscode', 'visual_studio', 
+        'xbox', 'steam', 'ea', 'netflix', 'spotify', 'youtube', 'edge',
+        'chrome', 'firefox', 'vscode', 'visual_studio', 
         'photoshop', 'illustrator', 'premiere', 'after_effects', 
         'blender', 'unity', 'unreal', 'gimp', 'obs', 'streamlabs', 
-        'twitch', 'youtube', 'zoom', 'teams', 'slack', 'notion', 
+        'twitch', 'zoom', 'teams', 'slack', 'notion', 
         'excel', 'word'
       ];
       
@@ -1776,7 +1776,7 @@
       } else if (currentTab === 'apps' && navigationFocus === 'carousel') {
         // Check which app is currently selected in the apps carousel
         const currentApp = apps[currentAppIndex];
-        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'ea')) {
+        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'ea' || currentApp.id === 'xbox')) {
           newSrc = 'assets/btns/details.png';
         } else {
           newSrc = 'assets/btns/open.png';
