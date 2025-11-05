@@ -437,6 +437,7 @@
       "steam": { title: "Steam", subtitle: "Gaming Platform" },
       "xbox": { title: "Xbox", subtitle: "Gaming Platform" },
       "ea": { title: "EA App", subtitle: "Gaming Platform" },
+      "battle": { title: "Battle.net", subtitle: "Gaming Platform" },
       "discord": { title: "Discord", subtitle: "Voice & Text Chat" },
       "spotify": { title: "Spotify", subtitle: "Music Streaming" },
       "netflix": { title: "Netflix", subtitle: "Video Streaming" },
@@ -461,7 +462,7 @@
       
       // We'll try to detect apps by attempting to load images
       const potentialApps = [
-        'xbox', 'steam', 'ea', 'netflix', 'spotify', 'youtube', 'edge',
+        'xbox', 'steam', 'netflix', 'edge', 'ea', 'battle', 'spotify',
         'chrome', 'firefox', 'vscode', 'visual_studio', 
         'photoshop', 'illustrator', 'premiere', 'after_effects', 
         'blender', 'unity', 'unreal', 'gimp', 'obs', 'streamlabs', 
@@ -1776,8 +1777,10 @@
       } else if (currentTab === 'apps' && navigationFocus === 'carousel') {
         // Check which app is currently selected in the apps carousel
         const currentApp = apps[currentAppIndex];
-        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'ea' || currentApp.id === 'xbox')) {
+        if (currentApp && (currentApp.id === 'netflix' || currentApp.id === 'steam' || currentApp.id === 'xbox')) {
           newSrc = 'assets/btns/details.png';
+        } else if (currentApp && (currentApp.id === 'ea' || currentApp.id === 'battle' || currentApp.id === 'spotify')) {
+          newSrc = 'assets/btns/install.png';
         } else {
           newSrc = 'assets/btns/open.png';
         }
